@@ -10,3 +10,19 @@ func Ping (ctx *gin.Context) {
 		"message" : "PONG",
 	})
 }
+
+func GetAllUser (ctx *gin.Context) {
+	
+}
+
+func CreateUser (ctx *gin.Context) {
+	
+}
+
+func UpdateUser (ctx *gin.Context) {
+	
+}
+
+func DellUser (ctx *gin.Context) {
+	
+}
