@@ -37,8 +37,9 @@ func main () {
 }
 
 func SetupRouting (route *gin.Engine, db *gorm.DB) {
-	route.GET("/api/user", handler.GetAllUser)
+	route.GET("/api/user", handler.GetAllUser(db))
+	route.GET("/api/user/:id", handler.GetUser(db))
 	route.POST("/api/user", handler.CreateUser(db))
-	route.PATCH("/api/user/:id", handler.UpdateUser)
+	route.PATCH("/api/user/:id", handler.UpdateUser(db))
 	route.DELETE("/api/user/:id", handler.DellUser)
 }
