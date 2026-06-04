@@ -5,7 +5,6 @@ import (
 	"goauth/internal/model"
 	"goauth/internal/repository"
 	"net/http"
-	// "os/user"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -63,40 +62,72 @@ func CreateUser(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
- func GetUser(db *gorm.DB) gin.HandlerFunc{
-	return func(ctx *gin.Context) {
-		param := ctx.Param("id")
-		id,_ := strconv.Atoi(param)
-		var user *model.User
-		db.First(&user, id)
-		ctx.JSON(http.StatusOK, gin.H{
-			"status" : 200,
-			"data" : user, 
-		})
-	}
- }
-
-func DellUser(ctx *gin.Context) {
-
-}
-
-//TODO: Advance
-
 func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		fmt.Println(id)
-		result, _ := strconv.Atoi(id)
-
-		var siswa *model.User
-		db.First(&siswa, result)
-		
-		update := map[string]interface{} {
-
+		result := ctx.Param("id")
+		id, _ := strconv.Atoi(result)
+		var payload map[string]interface{}
+		if err := ctx.ShouldBindJSON(&payload); err != nil {
+			ctx.JSON(400, gin.H{
+				"status":  400,
+				"message": payload,
+			})
+			fmt.Println("payload :", payload)
+			return
 		}
-		db.Model(&siswa).Where("id = ?", result).Updates(update)
+		db.Model(&model.User{}).Where("id = ?", id).Updates(payload)
+		ctx.JSON(200, gin.H{
+			"status":  200,
+			"message": payload,
+		})
+	}
+}
+
+func DellUser(db *gorm.DB) gin.HandlerFunc{
+	return  func(ctx *gin.Context) {
+		result := ctx.Param("id")
+		id,errors := strconv.Atoi(result)
+		var user *model.User
+		db.Find(&user, id)
+		if user.ID == 0 {
+			ctx.JSON(200, gin.H{
+				"status" : 200,
+				"data" : fmt.Sprintf("Cannot delete user with id %s user was empty", result),
+			})
+			return
+		}
+		if errors != nil {
+			ctx.JSON(400, gin.H{
+				"status" : 400,
+				"data" : "invalid id ",
+			})
+			return
+		}
+		db.Delete(&user, id)
+		ctx.JSON(200, gin.H{
+			"status" : 200,
+			"data" : user,
+		})
+	}
+}
+
+// TODO: Advance
+func GetUser(db *gorm.DB) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		param := ctx.Param("id")
+		id, _ := strconv.Atoi(param)
+		var user *model.User
+		db.First(&user, id)
+		if user.ID == 0 {
+			ctx.JSON(200, gin.H{
+				"status" : 200,
+				"message" : "succses with no data",
+			})
+			return
+		}
 		ctx.JSON(http.StatusOK, gin.H{
-			"id": result,
+			"status": 200,
+			"data":   user,
 		})
 	}
 }

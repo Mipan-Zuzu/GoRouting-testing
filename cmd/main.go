@@ -41,5 +41,5 @@ func SetupRouting (route *gin.Engine, db *gorm.DB) {
 	route.GET("/api/user/:id", handler.GetUser(db))
 	route.POST("/api/user", handler.CreateUser(db))
 	route.PATCH("/api/user/:id", handler.UpdateUser(db))
-	route.DELETE("/api/user/:id", handler.DellUser)
+	route.DELETE("/api/user/:id", handler.DellUser(db))
 }
